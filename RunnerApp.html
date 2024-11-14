@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RunnerApp</title>
+    <!-- Link al manifiesto -->
+    <link rel="manifest" href="manifest.json">
+    <!-- Tema de color para el navegador -->
+    <meta name="theme-color" content="#000000">
+    <!-- Ícono para el navegador -->
+    <link rel="icon" href="icon-192x192.png" type="image/png">
+
+    <script>
+        // Register the Service Worker with the correct scope
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/Documents/RunnerApp/service-worker.js", { scope: '/Documents/RunnerApp/' }).then((registration) => {
+                console.log("Service Worker registered with scope:", registration.scope);
+            }).catch((error) => {
+                console.log("Service Worker registration failed:", error);
+            });
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        h1 {
+            color: #333;
+        }
+        div {
+            margin: 10px 0;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #status {
+            padding: 20px;
+            border-radius: 10px;
+            background-color: #1fa2d0;
+            text-align: center;
+        }
+        @media (max-width: 600px) {
+            body {
+                padding: 20px;
+            }
+            button {
+                width: 100%;
+                margin: 5px 0;
+            }
+        }
+    </style>
+</head>
+<body>
+<h1>Runner App</h1>
+<div>
+    <button onclick="startRoutine()">Iniciar</button>
+    <button onclick="pauseRoutine()">Pausar</button>
+    <button onclick="stopRoutine()">Detener</button>
+</div>
+<div id="status">
+    <h2>Fase actual: <span id="currentPhase">-</span></h2>
+    <h3>Tiempo restante: <span id="remainingTime">0</span> segundos</h3>
+    <h3>Iteraciones: <span id="iterationCount">0</span></h3>
+</div>
+
+<audio id="stepSound" src="step-sound.mp3"></audio>
+<audio id="beepSound" src="beep.mp3"></audio>
+
+<script>
+    let intervalId;
+    let isRunning = false;
+    let iterationCount = 0;
+    const routines = [
+        { type: 'calentamiento', duration: 1 * 60, speed: 'lento' },
+        { type: 'caminada rápida', duration: 1 * 60, speed: 'medio' },
+        { type: 'trote', duration: 1.5 * 60, speed: 'rápido' },
+        { type: 'corriendo', duration: 1 * 60, speed: 'muy rápido' },
+        { type: 'trote', duration: 0.25 * 60, speed: 'rápido' },
+        { type: 'caminada rápida', duration: 0.25 * 60, speed: 'medio' },
+    ];
+
+    function startRoutine() {
+        if (isRunning) return;
+        isRunning = true;
+        currentRoutineIndex = 0;
+        iterationCount = 0;
+        nextRoutine();
+    }
+
+    function nextRoutine() {
+        if (!isRunning) return;
+
+        if (currentRoutineIndex >= routines.length) {
+            currentRoutineIndex = 0;
+            iterationCount++;
+            updateIterationCount();
+        }
+
+        const routine = routines[currentRoutineIndex];
+        playBeep();
+        updateStatus(routine.type, routine.duration, routine.speed);
+
+        intervalId = setInterval(() => {
+            playStepSound(routine.speed);
+        }, calculateStepInterval(routine.speed));
+
+        let remainingTime = routine.duration;
+        countdownInterval = setInterval(() => {
+            remainingTime--;
+            updateRemainingTime(remainingTime);
+            if (remainingTime <= 0) {
+                clearInterval(intervalId);
+                clearInterval(countdownInterval);
+                currentRoutineIndex++;
+                nextRoutine();
+            }
+        }, 1000);
+    }
+
+    function pauseRoutine() {
+        isRunning = false;
+        clearInterval(intervalId);
+    }
+
+    function stopRoutine() {
+        isRunning = false;
+        clearInterval(intervalId);
+        console.log("Rutina finalizada");
+        updateStatus("-", 0, 'lento');
+    }
+
+    function playStepSound(speed) {
+        const stepSound = document.getElementById("stepSound");
+        stepSound.playbackRate = calculateSpeed(speed);
+        stepSound.play();
+    }
+
+    function playBeep() {
+        const beepSound = document.getElementById("beepSound");
+        beepSound.play();
+    }
+
+    function calculateStepInterval(speed) {
+        switch(speed) {
+            case 'lento': return 1000;
+            case 'medio': return 700;
+            case 'rápido': return 500;
+            case 'muy rápido': return 300;
+        }
+    }
+
+    function calculateSpeed(speed) {
+        switch(speed) {
+            case 'lento': return 2;
+            case 'medio': return 4;
+            case 'rápido': return 6;
+            case 'muy rápido': return 8;
+        }
+    }
+
+    function updateStatus(phase, time, speed) {
+        document.getElementById("currentPhase").innerText = phase;
+        document.getElementById("remainingTime").innerText = time;
+        const statusDiv = document.getElementById("status");
+        switch(speed) {
+            case 'lento': statusDiv.style.backgroundColor = '#e0e0e0'; break;
+            case 'medio': statusDiv.style.backgroundColor = '#c0c0c0'; break;
+            case 'rápido': statusDiv.style.backgroundColor = '#a0a0a0'; break;
+            case 'muy rápido': statusDiv.style.backgroundColor = '#808080'; break;
+        }
+    }
+
+    function updateRemainingTime(time) {
+        document.getElementById("remainingTime").innerText = time;
+    }
+
+    function updateIterationCount() {
+        document.getElementById("iterationCount").innerText = iterationCount;
+    }
+</script>
+</body>
+</html>

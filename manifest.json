@@ -1,0 +1,22 @@
+{
+  "name": "Entrenamiento en el parque",
+  "short_name": "AppRunner",
+  "start_url": "./RunnerApp.html",
+  "scope": "/Documents/RunnerApp/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#000000",
+  "description": "Aplicación para rutinas de caminadora con control de tiempo y sonido",
+  "icons": [
+    {
+      "src": "/Documents/RunnerApp/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/Documents/RunnerApp/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
