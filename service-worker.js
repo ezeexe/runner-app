@@ -1,11 +1,11 @@
 const CACHE_NAME = 'caminadora-cache-v1';
 const urlsToCache = [
-  "/Documents/RunnerApp/RunnerApp.html",
-  "/Documents/RunnerApp/manifest.json",
-  "/Documents/RunnerApp/step-sound.mp3",
-  "/Documents/RunnerApp/beep.mp3",
-  "/Documents/RunnerApp/icon-192x192.png",
-  "/Documents/RunnerApp/icon-512x512.png"
+  "./RunnerApp.html",
+  "./manifest.json",
+  "./step-sound.mp3",
+  "./beep.mp3",
+  "./icon-192x192.png",
+  "./icon-512x512.png"
 ];
 
 // Install event
