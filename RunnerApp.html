@@ -94,6 +94,7 @@
     beepSound.load();
 
     let intervalId;
+    let countdownInterval;
     let isRunning = false;
     let iterationCount = 0;
     const routines = [
@@ -105,7 +106,7 @@
         { type: 'caminada rápida', duration: 0.25 * 60, speed: 'medio' },
     ];
 
-    function startRoutine() {
+    window.startRoutine = function() {
         if (isRunning) return;
         isRunning = true;
         currentRoutineIndex = 0;
@@ -143,18 +144,18 @@
         }, 1000);
     }
 
-    function pauseRoutine() {
+    window.pauseRoutine = function() {
         isRunning = false;
         clearInterval(intervalId);
     }
 
-function stopRoutine() {
-    isRunning = false;
-    clearInterval(intervalId);
-    clearInterval(countdownInterval); // Asegúrate de limpiar el temporizador de cuenta regresiva
-    console.log("Rutina finalizada");
-    updateStatus("-", 0, 'lento');
-}
+    window.stopRoutine = function() {
+        isRunning = false;
+        clearInterval(intervalId);
+        clearInterval(countdownInterval); // Asegúrate de limpiar el temporizador de cuenta regresiva
+        console.log("Rutina finalizada");
+        updateStatus("-", 0, 'lento');
+    }
 
     function playStepSound(speed) {
         stepSound.playbackRate = calculateSpeed(speed);
@@ -204,11 +205,6 @@ function stopRoutine() {
     function updateIterationCount() {
         document.getElementById("iterationCount").innerText = iterationCount;
     }
-
-    // Asignar eventos a los botones
-    document.querySelector('button[onclick="startRoutine()"]').addEventListener('click', startRoutine);
-    document.querySelector('button[onclick="pauseRoutine()"]').addEventListener('click', pauseRoutine);
-    document.querySelector('button[onclick="stopRoutine()"]').addEventListener('click', stopRoutine);
 });
 </script>
 </body>
