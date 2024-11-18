@@ -85,6 +85,14 @@
 <audio id="beepSound" src="beep.mp3"></audio>
 
 <script>
+    document.addEventListener('DOMContentLoaded', (event) => {
+    const stepSound = document.getElementById("stepSound");
+    const beepSound = document.getElementById("beepSound");
+
+    // Pre-cargar los sonidos
+    stepSound.load();
+    beepSound.load();
+
     let intervalId;
     let isRunning = false;
     let iterationCount = 0;
@@ -140,21 +148,22 @@
         clearInterval(intervalId);
     }
 
-    function stopRoutine() {
-        isRunning = false;
-        clearInterval(intervalId);
-        console.log("Rutina finalizada");
-        updateStatus("-", 0, 'lento');
-    }
+function stopRoutine() {
+    isRunning = false;
+    clearInterval(intervalId);
+    clearInterval(countdownInterval); // Asegúrate de limpiar el temporizador de cuenta regresiva
+    console.log("Rutina finalizada");
+    updateStatus("-", 0, 'lento');
+}
 
     function playStepSound(speed) {
-        const stepSound = document.getElementById("stepSound");
         stepSound.playbackRate = calculateSpeed(speed);
+        stepSound.currentTime = 0; // Reiniciar el sonido
         stepSound.play();
     }
 
     function playBeep() {
-        const beepSound = document.getElementById("beepSound");
+        beepSound.currentTime = 0; // Reiniciar el sonido
         beepSound.play();
     }
 
@@ -195,6 +204,12 @@
     function updateIterationCount() {
         document.getElementById("iterationCount").innerText = iterationCount;
     }
+
+    // Asignar eventos a los botones
+    document.querySelector('button[onclick="startRoutine()"]').addEventListener('click', startRoutine);
+    document.querySelector('button[onclick="pauseRoutine()"]').addEventListener('click', pauseRoutine);
+    document.querySelector('button[onclick="stopRoutine()"]').addEventListener('click', stopRoutine);
+});
 </script>
 </body>
 </html>
